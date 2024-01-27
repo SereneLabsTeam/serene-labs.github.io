@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronic Pain Quiz</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            background: linear-gradient(135deg, #326173 25%, transparent 25%) -50px 0,
+                        linear-gradient(135deg, #78B2BF 25%, transparent 25%) 0 0,
+                        linear-gradient(135deg, #2B838C 25%, transparent 25%) -50px -50px,
+                        linear-gradient(135deg, #29A6A6 25%, transparent 25%) 0 -50px;
+            margin: 0;
+            padding: 3%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+        }
+        
+        form {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 30px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            position: relative;
+            transition: opacity 0.5s ease-in-out; /* Added transition for opacity */
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #591925;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cool-button {
+            --primary-color: #591925;
+            --secondary-color: #591925;
+            --transition-speed: 0.3s;
+            --button-padding: 15px 30px;
+            --button-font-size: 16px;
+            --border-radius: 8px;
+            --hover-scale: 1.1;
+
+            display: inline-block;
+            padding: var(--button-padding);
+            font-size: var(--button-font-size);
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+
+            color: #fff;
+            background-color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .cool-button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(var(--hover-scale));
+        }
+        
+        @keyframes dotAnimation {
+            0% { opacity: 0; }
+            25% { opacity: 1; }
+            50% { opacity: 0; }
+            75% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        @keyframes textFlash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        #loadingDots {
+            display: flex;
+            font-size: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .dot {
+            animation: dotAnimation 3s infinite;
+            color: #591925;
+            margin: 0 5px;
+        }
+        
+        #loadingText {
+            font-size: 24px;
+            animation: textFlash 3s infinite;
+        }
+        
+        #submitButton {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 20px;
+        }
+        
+        #finalText {
+            display: none;
+            margin-top: 10px;
+            font-size: 80px;
+        }
+
+        /* New styles for email container */
+        #email-container {
+            opacity: 0; /* Initially set to transparent */
+            transition: opacity 0.5s ease-in-out; /* Added transition for opacity */
+        }
+
+        #thank-you-container {
+            display: none;
+            text-align: center;
+            background-color: #78B2BF; /* Green background color */
+            color: white;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards; /* Add a fade-in animation */
+        }
+        #thank-you-contaier p {
+            color: #fff
+        }
+        #thank-you-container h1 {
+            color: #fff
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="welcome-container">
+        <h1>Hello</h1>
+        <p>Click the button below to start the chronic pain quiz.</p>
+        <button onclick="startQuiz()" class="cool-button">Start Quiz</button>
+    </div>
+
+    <div id="quiz-container" class="quiz-container" style="display: none;">
+        <form id="painQuizForm" onsubmit="return submitQuiz()" action="https://docs.google.com/forms/d/e/1FAIpQLSeYenmG2s9EeDYkh1KNt8W90P7kKipc3EBF4oW07cJuO5AR5g/formResponse" method="POST">
+            <label for="age">What is your age?</label>
+            <select id="age" name="entry.316402973">
+                <option value="Under 18" selected>Under 18</option>
+                <option value="18-24">18-24</option>
+                <option value="25-34">25-34</option>
+                <option value="35-44">35-44</option>
+                <option value="45-54">45-54</option>
+                <option value="55-64">55-64</option>
+                <option value="65 or older">65 or older</option>
+            </select>
+            <label for="name">What is your name?</label>
+            <input type="text" id="name" name="entry.1097038289">
+
+            <label for="gender">What is your gender?</label>
+            <select id="gender" name="entry.952264618">
+                <option value="Male" selected>Male</option>
+                <option value="Female">Female</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+
+            <label for="typeOfPain">What type of pain are you feeling?</label>
+            <select id="typeOfPain" name="entry.159803565">
+                <option value="Lower back pain" selected>Lower back pain</option>
+                <option value="Upper back pain">Upper back pain</option>
+                <option value="Neck pain">Neck pain</option>
+                <option value="Headaches">Headaches</option>
+                <option value="Muscle pain">Muscle pain</option>
+            </select>
+
+            <label for="painIntensity">On a scale from 1-10, describe the intensity of your pain?</label>
+            <input type="number" id="painIntensity" name="entry.1982673292" min="1" max="10" placeholder="Select a number from 1 to 10">
+
+            <label for="painDuration">How long has this pain been lasting?</label>
+            <select id="painDuration" name="entry.374367567">
+                <option value="Less than a week" selected>Less than a week</option>
+                <option value="1-4 weeks">1-4 weeks</option>
+                <option value="1-3 months">1-3 months</option>
+                <option value="3-6 months">3-6 months</option>
+                <option value="6 months to a year">6 months to a year</option>
+                <option value="Over a year">Over a year</option>
+            </select>
+
+            <label for="painFrequency">How often do you feel the pain?</label>
+            <select id="painFrequency" name="entry.954556592">
+                <option value="Rarely" selected>Rarely</option>
+                <option value="Occasionally">Occasionally</option>
+                <option value="Daily">Daily</option>
+                <option value="Constantly">Constantly</option>
+            </select>
+
+            <label for="triedExercises">Have you tried any exercises?</label>
+            <select id="triedExercises" name="entry.1030295383">
+                <option value="Yes" selected>Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="triedTreatment">Did you try any treatment for chronic pain?</label>
+            <select id="triedTreatment" name="entry.1254535098">
+                <option value="Meditation" selected>Meditation</option>
+                <option value="Physical therapy">Physical therapy</option>
+                <option value="Chiropractic">Chiropractic care</option>
+                <option value="Acupuncture">Acupuncture</option>
+                <option value="Massage therapy">Massage therapy</option>
+            </select>
+
+            <label for="goal">What is your goal?</label>
+            <select id="goal" name="entry.642972770">
+                <option value="Pain relief" selected>Pain relief</option>
+                <option value="Improved mobility">Improved mobility</option>
+                <option value="Better quality of life">Better quality of life</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="occupation">What type of job do you do?</label>
+            <input type="text" id="occupation" name="entry.658966043" placeholder="Enter occupation">
+
+            <button type="submit" action="post" class="cool-button">Submit</button>
+        </form>
+    </div>
+
+    <div id="loading-plan" style="display: none;">
+        <div id="loadingDots">
+            <span class="dot">&bull;</span>
+            <span class="dot" style="animation-delay: 0.25s;">&bull;</span>
+            <span class="dot" style="animation-delay: 0.5s;">&bull;</span>
+            <span class="dot" style="animation-delay: 0.75s;">&bull;</span>
+            <span class="dot" style="animation-delay: 1s;">&bull;</span>
+        </div>
+
+        <div id="loadingText">Submitting answers...</div>
+
+        <div id="finalText">Just one more step...</div>
+        <center><button id="submitButton" onclick="getYourPlan()" class="cool-button">Get my personalized plan now!</button></center>
+    </div>
+
+    <div id="email-container" style="display: none;">
+        <form id="emailForm" onsubmit="return submitEmail()" method="POST">
+            <label for="email">Please enter your email:</label>
+            <input type="email" id="email" name="entry.1609163284" required>
+            <button type="submit" class="cool-button">Submit</button>
+        </form>
+    </div>
+
+    <div id="thank-you-container" style="display: none;">
+        <h1>Thank You!</h1>
+        <p>Your submission has been received.</p>
+        <p>You will start recieving daily emails soon.</p>
+        <p>We appreciate your time and effort.</p>
+        <p>For any further assistance, feel free to <a href="mailto:serenelabs.team@gmail.com">contact us</a>.</p>
+    </div>
+
+    <script>
+        function startQuiz() {
+            // Hide the welcome container
+            document.querySelector('.welcome-container').style.display = 'none';
+
+            // Show the quiz container
+            document.getElementById('quiz-container').style.display = 'block';
+        }
+
+        function submitQuiz() {
+            // Show the loading bar
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('loading-plan').style.display = 'block';
+
+            // Display loading dots and text immediately upon submission
+            document.getElementById('loadingDots').style.display = 'flex';
+            document.getElementById('loadingText').innerHTML = 'Submitting answers...';
+            setTimeout(function () {
+                document.getElementById('loadingText').innerHTML = 'Creating your personalized plan...';
+            }, 3000);
+
+            setTimeout(function () {
+                document.getElementById('loadingText').innerHTML = 'Getting things ready for you...';
+            }, 10000);
+
+            setTimeout(function () {
+                document.getElementById('loadingDots').style.display = 'none';
+                document.getElementById('loadingText').style.display = 'none';
+                document.getElementById('submitButton').style.display = 'block';
+                document.getElementById('finalText').style.display = 'block';
+            }, 14000);
+            // Send the form data to Google Forms using fetch
+
+            // Prevent the form from actually submitting and refreshing the page
+            return false;
+        }
+
+        function getYourPlan() {
+            // Hide the loading plan container
+            document.getElementById('loading-plan').style.display = 'none';
+
+            // Show the email container with a fade-in effect
+            document.getElementById('email-container').style.display = 'block';
+            setTimeout(function () {
+                document.getElementById('email-container').style.opacity = '1';
+            }, 100); // Set a slight delay for the fade-in effect
+            return false;
+        }
+        function submitEmail() {
+            const formData = new FormData(document.getElementById('emailForm'));
+            // Display a success message (you can replace this with your logic)
+            const formData1 = new FormData(document.getElementById('painQuizForm'));
+            // You may redirect the user or perform any other actions here
+            document.getElementById('email-container').style.display = 'none';
+            document.getElementById('thank-you-container').style.display = 'block';
+            fetch('https://docs.google.com/forms/d/e/1FAIpQLSc5sZ1rfmPBulcZ5sKFFbB_bRtx9JopAMcxiG0tkzuk3mM76w/formResponse', {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors' // Set mode to 'no-cors' for a simple request
+            })
+                .then(response => {
+                    // Handle success (you may want to customize this)
+                    console.log('Form submitted successfully:', response);
+
+                })
+                .catch(error => {
+                    // Handle error (you may want to customize this)
+                    console.error('Error submitting form:', error);
+                    // Display an error message or take appropriate action
+                });
+                fetch('https://docs.google.com/forms/d/e/1FAIpQLSeYenmG2s9EeDYkh1KNt8W90P7kKipc3EBF4oW07cJuO5AR5g/formResponse', {
+                    method: 'POST',
+                    body: formData1,
+                    mode: 'no-cors' // Set mode to 'no-cors' for a simple request
+                })
+                .then(response => {
+                    // Handle success (you may want to customize this)
+                    console.log('Form submitted successfully:', response);
+            
+                })
+                .catch(error => {
+                    // Handle error (you may want to customize this)
+                    console.error('Error submitting form:', error);
+                    // Display an error message or take appropriate action
+                });
+            document.getElementById('email-container').style.display = 'none';
+            document.getElementById('thank-you-container').style.display = 'block';
+            // Prevent the form from actually submitting and refreshing the page
+            // Prevent the form from actually submitting and refreshing the page
+            return false;
+        }
+    </script>
+</body>
+
+</html>
